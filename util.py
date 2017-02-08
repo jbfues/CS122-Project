@@ -15,5 +15,9 @@ def break_string(input_str):
     for item in string_list:
         for punc in punc_list:
             item = item.replace(punc, '')
-    return string_list
+    final_list = []
+    for x in string_list:
+        if x != "":
+            final_list.append(x)
+    return final_list
         
