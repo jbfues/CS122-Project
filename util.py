@@ -69,6 +69,24 @@ def break_string(input_str):
             final_list.append(x)
     return final_list
 
+def get_name_words(inspection):
+    '''
+    Retrieves the words in the name of the restaurant from its inspection information.
+
+    Inputs:
+        inspection: a dictionary
+    Outputs:
+        A list of words in the name of the restaurant
+    '''
+    aka = break_string(inspection['aka_name'])
+    dba = break_string(inspection['dba_name'])
+    for word in aka:
+        final_list.append(word)
+    for word in dba:
+        if word not in aka:
+            final_list.append(word)
+    return final_list
+
 class YelpHelper:
     '''
     A wrapper for the yelp library's client class 
