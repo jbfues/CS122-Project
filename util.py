@@ -81,11 +81,10 @@ def get_name_words(inspection):
     aka = break_string(inspection['aka_name'])
     dba = break_string(inspection['dba_name'])
     for word in aka:
-        final_list.append(word)
-    for word in dba:
-        if word not in aka:
-            final_list.append(word)
-    return final_list
+        if word in dba:
+            index = dba.index(word)
+            dba.pop()
+    return aka + dba 
 
 class YelpHelper:
     '''
