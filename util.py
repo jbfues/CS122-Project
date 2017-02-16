@@ -7,15 +7,29 @@ from yelp.oauth1_authenticator import Oauth1Authenticator
 
 CITY_API_ENDPOINT = 'https://data.cityofchicago.org/resource/cwig-ma7x.json'
 
-def get_inspections(min_date = None):
+def get_inspections_from_csv(filename):
+    '''
+    Input: csv file downloaded from city data portal at 
+           https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5
+
+    Returns: list of dicts, where each dict represents an inspection and has 
+            keys for the field names of the city dataset
+    '''
+    return [{}]
+
+def get_inspections_from_api(min_date = None):
     '''
     Retrieves all available food inspection data from the city data portal
+
+    **NOTE**: There appears to be a maximum of 1000 inspections returned,
+              so use get_inspections_from_csv() for intitial data pull.
 
     Input: min_date (string) in the form of a floating timestamp
 
             https://dev.socrata.com/docs/datatypes/floating_timestamp.html
 
-    Output: list of dicts, where each dict represents an inspection
+    Returns: list of dicts, where each dict represents an inspection and has 
+            keys for the fieldnames from the city dataset
     '''
     req = CITY_API_ENDPOINT
     if min_date != None:
@@ -39,10 +53,10 @@ def get_api_key(filename = 'yelp_api_key.json'):
 
     Output: dictionary in the following form
         {
-            "Consumer Key": <string>,
-            "Consumer Secret": <string>,
-            "Token": <string>,
-            "Token Secret": <string>
+            "Consumer Key": <str>,
+            "Consumer Secret": <str>,
+            "Token": <str>,
+            "Token Secret": <str>
         }
     '''
     json_file = open(filename)
@@ -69,12 +83,14 @@ def break_string(input_str):
             final_list.append(x)
     return final_list
 
-def get_name_words(inspection):
+def get_name_words(inspection, match = {}):
     '''
-    Retrieves the words in the name of the restaurant from its inspection information.
+    Retrieves the words in the name of the restaurant from its 
+    inspection information and its yelp page (if applicable)
 
     Inputs:
-        inspection: a dictionary
+        inspection (dict)
+        match (dict, optional): contains the yelp data for the restaurant 
     Outputs:
         A list of words in the name of the restaurant
     '''
@@ -83,8 +99,45 @@ def get_name_words(inspection):
     for word in aka:
         if word in dba:
             index = dba.index(word)
-            dba.pop()
-    return aka + dba 
+            dba.pop(index)
+    result = aka + dba
+    if match:
+        name = break_string(match['name'])
+        for word in result:
+            if word in name:
+                index = name.index(word)
+                name.pop(index)
+        result += name 
+    return result  
+
+def get_possible_matches(inspection, yh):
+    '''
+    Takes a dict representing an inspection and a YelpHelper and
+    returns a list of dicts representing possible yelp matches 
+    '''
+    return {[]}
+
+def pick_match(inspection, candidates, block = None):
+    '''
+    Searches for the restaurant from an inspection in a list of
+    restaurants from yelp
+
+    Inputs:
+        inspection: dict with indices for each field name from city dataset
+        candidates: list of dicts in the form of
+                        {
+                            'name': <string>, 
+                            'street number': <string>, 
+                            'street name' <string>,
+                            'zip': <string>
+                            'yelp_id: <string>
+                         }
+        block (optional): a field by which to automatically reject candidates
+                          if said field does not match exactly
+
+    Returns: a dict from candidates if a match is found, None otherwise
+    '''
+    return {} 
 
 class YelpHelper:
     '''
