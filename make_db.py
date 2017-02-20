@@ -47,7 +47,24 @@ def create_tables(schema, filename):
     #######################################################
     # use c.execute(<command>) to create tables in database
     #######################################################
+    for table in schema:
+        parameters = [table]
 
+        # First part of the final query.
+        query = "CREATE TABLE ? ("
+
+        # Create the second part of the query by joining strings.
+        query_list = []
+        for field in schema[table]:
+            field_string = "? ?"
+            query_list.append(field_string)
+            parameters.append(field[0])
+            parameters.append(field[1])
+        query_bis = ", ".join(query_list)
+        
+        # Put it all together.
+        query = query + query_bis + ")"
+        c.execute(query, parameters)
 
     #######################################################
     return c 
