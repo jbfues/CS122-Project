@@ -19,6 +19,7 @@ def get_inspections_from_csv(filename):
     with open(filename) as f:
         reader = csv.reader(f, skipinitialspace=True)
         header = next(reader)
+        header = [h.lower().replace(' ', '_').rstrip('#') for h in header]
         inspections = [dict(zip(header, row)) for row in reader]
     return inspections  
 
@@ -133,12 +134,16 @@ def address_to_tuple(address):
     street = m.group(2).strip()
     return (num, street)
 
-def get_possible_matches(inspection, yh):
+def get_possible_matches(inspection, yh, radius = 30, limit = 5):
     '''
     Takes a dict representing an inspection and a YelpHelper and
     returns a list of dicts representing possible yelp matches 
     '''
-    return {[]}
+    latitude = inspection['latitude']
+    longitude = inspection['longitude']
+    name = inspection['dba_name']
+    matches = yh.search_by_location(latitude, longitude, name, radius, limit)
+    return matches 
 
 def pick_match(inspection, candidates, block = None):
     '''
