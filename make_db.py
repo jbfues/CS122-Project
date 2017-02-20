@@ -11,13 +11,14 @@ def write_inspections_to_db(inspections_csv, c):
 
     Input: 
         inspections_csv (str): filename for csv containing inspection data 
-        cursor: sqlite3 Cursor object for database
+        c (cursor): sqlite3 Cursor object for database
 
     Returns: list of dicts representing unmatched inspections 
     '''
     yh = YelpHelper()
     inspections = get_inspections_from_csv(inspections_csv)
     for inspection in inspection:
+
         # . . . 
         candidates = get_possible_matches(inspection, yh)
         match = pick_match(inspection, candidates) #can also input block field
@@ -29,10 +30,10 @@ def create_tables(schema, filename):
     Creates tables designated in schema argument to sqlite file 
 
     Input: 
-        schema (dict of lists)
+        schema (dict of lists of tuples)
             {
-                <table name one>: [<field name one>, <field name two>, ... ]
-                <table name two>: [<field name one>, <field name two>, ... ]
+                <table name one>: [(<field name one>, <type 1>), (<field name two>,<type 1>), ... ]
+                <table name two>: [(<field name one>, <type 1>), (<field name two>,<type 1>), ... ]
                 .
                 .
                 .
