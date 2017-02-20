@@ -2,6 +2,7 @@ import numpy as np
 import string
 import json
 import requests
+import re
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
@@ -15,7 +16,12 @@ def get_inspections_from_csv(filename):
     Returns: list of dicts, where each dict represents an inspection and has 
             keys for the field names of the city dataset
     '''
-    return [{}]
+    with open(filename) as f:
+        reader = csv.reader(f, skipinitialspace=True)
+        header = next(reader)
+        inspections = [dict(zip(header, row)) for row in reader]
+    return inspections  
+
 
 def get_inspections_from_api(min_date = None):
     '''
@@ -152,6 +158,7 @@ class YelpHelper:
             token_secret= key['Token Secret']
             )
         self.client = Client(auth)
+        self.p = re.compile(r'\d*')
 
     def search_by_location(latitude, longitude, name, radius = 30, limit = 5):
         '''
@@ -161,7 +168,7 @@ class YelpHelper:
                 radius (number)
                 limit (number)
 
-        Output: list of tuples of strings [(name, ID), ... ]
+        candidates: list of dicts representing businesses
         '''
         params = {
             'term': name
@@ -172,9 +179,18 @@ class YelpHelper:
         resp = client.search_by_coordinates(latitude, longitude, **params)
         results = []
         for b in resp.businesses: #iterate over business objects
-            name = b.name.encode('utf-8')
-            ID = b.id.encode('utf-8')
-            results.append((name, ID))
+            address = business.location.city.encode('utf-8')
+            m = self.p.match(address)
+            num = m.group(1)
+            street = m.group(2).strip()
+            b = {
+                'name': b.name.encode('utf-8'), 
+                'street number': num, 
+                'street name': street, 
+                'zip': business.location.postal_code.encode('utf-8'),
+                'yelp_id': b.id.encode('utf-8')
+                }
+            results.append(b)
         return results
 
     def search_by_id(ID):
