@@ -116,6 +116,23 @@ def get_name_words(inspection, match = {}):
         result += name 
     return result  
 
+def address_to_tuple(address):
+    '''
+    Takes an address string and returns a corresponding 
+    (<number>, <street name>) tuple 
+
+    If address string does not start with a sequence of digits, then
+    num will be '' and street will be the whole address string.
+
+    Inputs: address (str) e.g. "140 New Montgomery St"
+
+    Returns: (tuple of strings) e.g. ('140', 'New Montgomery St')
+    '''
+    m = re.match(r'(\d*)(\D.*)$', address)
+    num = m.group(1)
+    street = m.group(2).strip()
+    return (num, street)
+
 def get_possible_matches(inspection, yh):
     '''
     Takes a dict representing an inspection and a YelpHelper and
@@ -158,7 +175,6 @@ class YelpHelper:
             token_secret= key['Token Secret']
             )
         self.client = Client(auth)
-        self.p = re.compile(r'\d*')
 
     def search_by_location(latitude, longitude, name, radius = 30, limit = 5):
         '''
@@ -180,13 +196,11 @@ class YelpHelper:
         results = []
         for b in resp.businesses: #iterate over business objects
             address = business.location.city.encode('utf-8')
-            m = self.p.match(address)
-            num = m.group(1)
-            street = m.group(2).strip()
+            address = address_to_tuple(address)
             b = {
                 'name': b.name.encode('utf-8'), 
-                'street number': num, 
-                'street name': street, 
+                'street number': address[0], 
+                'street name': address[1], 
                 'zip': business.location.postal_code.encode('utf-8'),
                 'yelp_id': b.id.encode('utf-8')
                 }
