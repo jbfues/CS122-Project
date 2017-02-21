@@ -220,7 +220,7 @@ class YelpHelper:
         resp = client.search_by_coordinates(latitude, longitude, **params)
         results = []
         for b in resp.businesses: #iterate over business objects
-            address = business.location.city.encode('utf-8')
+            address = business.location.address[0].encode('utf-8')
             address = address_to_tuple(address)
             b = {
                 'name': b.name.encode('utf-8'), 
