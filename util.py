@@ -149,7 +149,7 @@ def address_to_tuple(address):
 
     Returns: (tuple of strings) e.g. ('140', 'New Montgomery St')
     '''
-    m = re.match(r'(\d*)(\D.*)$', address)
+    m = re.match(r'([\d-]*)([^\d-].*)$', address)
     num = m.group(1)
     street = m.group(2).strip()
     return (num, street)
@@ -212,8 +212,8 @@ class YelpHelper:
         candidates: list of dicts representing businesses
         '''
         params = {
-            'term': name
-            'limit': limit
+            'term': name,
+            'limit': limit,
             'radius_filter': radius
             }
         #resp is a SearchResponse object

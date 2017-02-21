@@ -4,6 +4,14 @@ from util import get_inspections_from_csv
 from util import get_possible_matches
 from util import pick_match
 
+def write_inspection(inspection, c):
+    '''
+    Writes inspection data into inspection table 
+
+    Columns are (inspection_id, risk, inspection_date, street number,
+                    street name, inspection_type, resutls, violations)
+    '''
+
 def write_inspections_to_db(inspections_csv, c):
     '''
     Goes through all inspections, matches them to a unique yelp id 
