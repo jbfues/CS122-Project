@@ -38,9 +38,9 @@ def write_inspections_to_db(inspections_csv, c):
                 candidates = get_possible_matches(inspection, yh)
                 match = pick_match(inspection, candidates) #can take block field
                 if match != None:
-                    c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
-                        (match['name'], inspection['license_'], match['street name'], 
-                            match['street name'], match['yelp_id']))
+                    c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?)", 
+                        (match['name'], inspection['license_'], 
+                            inspection['address'], match['yelp_id']))
                 else unmatched.append(inspection)
             write_inspection(inspection)
     return unmatched
