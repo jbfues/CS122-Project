@@ -4,13 +4,16 @@ from util import get_inspections_from_csv
 from util import get_possible_matches
 from util import pick_match
 
-def write_inspection(inspection, c):
+def write_inspection(i, c):
     '''
-    Writes inspection data into inspection table 
+    Writes inspection data into inspections table 
 
-    Columns are (inspection_id, risk, inspection_date, street number,
-                    street name, inspection_type, resutls, violations)
+    Columns are (inspection_id, risk, inspection_date,
+                     inspection_type, results, violations)
     '''
+    c.execute("INSERT INTO inspections VALUES (?, ?, ?, ?, ?, ?)", 
+                        (i['inspection_id'], i['risk'], i['inspection_date'], 
+                            i['inspection_type'], i['results'], i['violations']))
 
 def write_inspections_to_db(inspections_csv, c):
     '''
@@ -35,8 +38,9 @@ def write_inspections_to_db(inspections_csv, c):
                 candidates = get_possible_matches(inspection, yh)
                 match = pick_match(inspection, candidates) #can take block field
                 if match != None:
-                    c.execute("INSERT INTO stocks VALUES (?, ?, ?)", 
-                        (match['name'], inspection['license_'], match['yelp_id']))
+                    c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
+                        (match['name'], inspection['license_'], match['street name'], 
+                            match['street name'], match['yelp_id']))
                 else unmatched.append(inspection)
             write_inspection(inspection)
     return unmatched
