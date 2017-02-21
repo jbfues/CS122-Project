@@ -17,13 +17,21 @@ def write_inspections_to_db(inspections_csv, c):
     '''
     yh = YelpHelper()
     inspections = get_inspections_from_csv(inspections_csv)
+    types = get_types(inspections)
+    unmatched = []
     for inspection in inspection:
-
-        # . . . 
-        candidates = get_possible_matches(inspection, yh)
-        match = pick_match(inspection, candidates) #can also input block field
-        # . . . 
-    return [{}]
+        if inspection['facility_type'] in types:
+            inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
+                 inspection)
+            if not inDB and inspection['license_'] != '':
+                candidates = get_possible_matches(inspection, yh)
+                match = pick_match(inspection, candidates) #can take block field
+                if match != None:
+                    c.execute("INSERT INTO stocks VALUES (?, ?, ?)", 
+                        (match['name'], inspection['license_'], match['yelp_id']))
+                else unmatched.append(inspection)
+            write_inspection(inspection)
+    return unmatched
 
 def create_tables(schema, filename):
     '''
