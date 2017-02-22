@@ -7,6 +7,26 @@ from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
 CITY_API_ENDPOINT = 'https://data.cityofchicago.org/resource/cwig-ma7x.json'
+KEYWORDS = ['nursing', 'day care', 'school', 'bakery', 'deli', 
+            'restaurant', 'pub', 'cafe', 'coffee', 'college',
+            'daycare', 'food pantry', 'truck', 'shelter', 'tevern',
+            'pub', 'tea', 'bar', 'icecream', 'gelato', 'shop', 'theater']
+
+def get_types(inspections):
+    '''
+    Takes a list of dicts representing inspections and returns a list 
+    of facility_type values that are deemed in the focus of the project.
+    '''
+    types = set()
+    for inspection in inspections:
+        t.add(inspection['facility_type'])
+    types = set()
+    for val in t:
+        for word in KEYWORDS:
+            if word in val.lower():
+                types.add(val)
+    return list(types)
+
 
 def get_inspections_from_csv(filename):
     '''
@@ -19,6 +39,7 @@ def get_inspections_from_csv(filename):
     with open(filename) as f:
         reader = csv.reader(f, skipinitialspace=True)
         header = next(reader)
+        header = [h.lower().replace(' ', '_').rstrip('#') for h in header]
         inspections = [dict(zip(header, row)) for row in reader]
     return inspections  
 
@@ -128,17 +149,21 @@ def address_to_tuple(address):
 
     Returns: (tuple of strings) e.g. ('140', 'New Montgomery St')
     '''
-    m = re.match(r'(\d*)(\D.*)$', address)
+    m = re.match(r'([\d-]*)([^\d-].*)$', address)
     num = m.group(1)
     street = m.group(2).strip()
     return (num, street)
 
-def get_possible_matches(inspection, yh):
+def get_possible_matches(inspection, yh, radius = 30, limit = 5):
     '''
     Takes a dict representing an inspection and a YelpHelper and
     returns a list of dicts representing possible yelp matches 
     '''
-    return {[]}
+    latitude = inspection['latitude']
+    longitude = inspection['longitude']
+    name = inspection['dba_name']
+    matches = yh.search_by_location(latitude, longitude, name, radius, limit)
+    return matches 
 
 def pick_match(inspection, candidates, block = None):
     '''
@@ -187,15 +212,15 @@ class YelpHelper:
         candidates: list of dicts representing businesses
         '''
         params = {
-            'term': name
-            'limit': limit
+            'term': name,
+            'limit': limit,
             'radius_filter': radius
             }
         #resp is a SearchResponse object
         resp = client.search_by_coordinates(latitude, longitude, **params)
         results = []
         for b in resp.businesses: #iterate over business objects
-            address = business.location.city.encode('utf-8')
+            address = business.location.address[0].encode('utf-8')
             address = address_to_tuple(address)
             b = {
                 'name': b.name.encode('utf-8'), 
