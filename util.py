@@ -3,6 +3,7 @@ import string
 import json
 import requests
 import re
+import jellyfish
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
@@ -151,7 +152,7 @@ def address_to_tuple(address):
     '''
     m = re.match(r'([\d-]*)([^\d-].*)$', address)
     num = m.group(1)
-    street = m.group(2).strip()
+    street = m.group(2).strip().lower()
     return (num, street)
 
 def get_possible_matches(inspection, yh, radius = 30, limit = 5):
@@ -165,7 +166,7 @@ def get_possible_matches(inspection, yh, radius = 30, limit = 5):
     matches = yh.search_by_location(latitude, longitude, name, radius, limit)
     return matches 
 
-def pick_match(inspection, candidates, block = None):
+def pick_match(inspection, candidates):
     '''
     Searches for the restaurant from an inspection in a list of
     restaurants from yelp
@@ -180,12 +181,49 @@ def pick_match(inspection, candidates, block = None):
                             'zip': <string>
                             'yelp_id: <string>
                          }
-        block (optional): a field by which to automatically reject candidates
-                          if said field does not match exactly
-
     Returns: a dict from candidates if a match is found, None otherwise
     '''
-    return {} 
+    #Get information about the inspection
+    inspec_name = inspection['dba_name'].lower()
+    inspec_zip = str(inspection['zip'])
+    inspec_street_num, inspec_street_name = address_to_tuple(inspection['address'])
+
+    best_match = None
+    best_match_name_jw = 0
+    best_match_street_jw = 0
+    best_match_num_jw = 0
+    first = True
+    #Iterate over candidates to find the best match:
+    for candidate in candidates:
+        if candidate['zip'] == inspec_zip:
+            cand_name = candidate['name'].lower()
+            cand_st = candidate['street name'].lower()
+            cand_st_num = candidate['street number']
+            curr_name_jw = jellyfish.jaro_winkler(cand_name, inspec_name)
+            curr_st_jw = jellyfish.jaro_winkler(cand_st, inspec_street_name)
+            curr_num_jw = jellyfish.jaro_winkler(cand_st_num, inspec_street_num) 
+            if first:
+                if curr_name_jw >= .90:
+                    if curr_st_jw >= .90:
+                        if curr_num_jw >= .90:
+                            best_match = candidate
+                            best_match_name_jw = curr_name_jw
+                            best_match_street_jw = curr_st_jw
+                            best_match_num_jw = curr_num_jw
+                            first = False
+            else:
+                if curr_name_jw >= .90:
+                    if curr_st_jw >= .90:
+                        if curr_num_jw >= .90:
+                            curr_sum = curr_name_jw + curr_st_jw + curr_num_jw
+                            best_sum = best_match_name_jw + best_match_street_jw + best_match_num_jw
+                            if curr_sum > best_sum:
+                                best_match = candidate
+                                best_match_name_jw = curr_name_jw
+                                best_match_street_jw = curr_st_jw
+                                best_match_num_jw = curr_num_jw
+    return best_match
+
 
 class YelpHelper:
     '''
