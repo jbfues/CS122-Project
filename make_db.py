@@ -38,6 +38,7 @@ def write_inspections_to_db(inspections_csv, c):
                  inspection)
             if not inDB.fetchall() and inspection['license_'] != '':
                 candidates = get_possible_matches(inspection, yh)
+                print(candidates)
                 match = pick_match(inspection, candidates) #can take block field
                 if match != None:
                     c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 

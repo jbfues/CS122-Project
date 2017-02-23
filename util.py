@@ -259,14 +259,15 @@ class YelpHelper:
         resp = self.client.search_by_coordinates(latitude, longitude, **params)
         results = []
         for business in resp.businesses: #iterate over business objects
-            address = str(business.location.address[0].encode('utf-8'))
-            address = address_to_tuple(address)
+            address = business.location.address[0].encode('utf-8')
+            address = address_to_tuple(str(address).strip("b").strip("'"))
+            print(address)
             b = {
-                'name': business.name.encode('utf-8'), 
-                'street number': address[0], 
+                'name': str(business.name.encode('utf-8')), 
+                'street number': str(address[0]), 
                 'street name': address[1], 
-                'zip': business.location.postal_code.encode('utf-8'),
-                'yelp_id': business.id.encode('utf-8')
+                'zip': str(business.location.postal_code.encode('utf-8')),
+                'yelp_id': str(business.id.encode('utf-8'))
                 }
             results.append(b)
         return results
