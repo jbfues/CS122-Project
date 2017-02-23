@@ -252,18 +252,18 @@ class YelpHelper:
         '''
         #resp is a SearchResponse object
         resp = self.client.search_by_coordinates(latitude, longitude, term = name,
-                    limit = limit, radius_filter = radius_filter)
+                    limit = limit, radius_filter = radius)
         results = []
         for business in resp.businesses: #iterate over business objects
             address = business.location.address[0].encode('utf-8')
             address = address_to_tuple(str(address).strip("b").strip("'"))
             print(address)
             b = {
-                'name': str(business.name.encode('utf-8')), 
-                'street number': str(address[0]), 
+                'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
+                'street number': address[0], 
                 'street name': address[1], 
-                'zip': str(business.location.postal_code.encode('utf-8')),
-                'yelp_id': str(business.id.encode('utf-8'))
+                'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
+                'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
                 }
             results.append(b)
         return results
