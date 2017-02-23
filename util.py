@@ -164,7 +164,6 @@ def get_possible_matches(inspection, yh, radius = 30, limit = 5):
     latitude = inspection['latitude']
     longitude = inspection['longitude']
     name = inspection['dba_name']
-    print(latitude, longitude, name, radius, limit)
     matches = yh.search_by_location(latitude, longitude, name, radius, limit)
     return matches 
 
