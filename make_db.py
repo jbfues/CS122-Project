@@ -37,15 +37,16 @@ def write_inspections_to_db(inspections_csv, c):
             inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
                  inspection)
             if not inDB.fetchall() and inspection['license_'] != '':
-                candidates = get_possible_matches(inspection, yh)
-                match = pick_match(inspection, candidates) #can take block field
-                if match != None:
-                    c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
-                        (match['name'], inspection['license_'], 
-                            inspection['address'], inspection['zip'], 
-                            match['yelp_id']))
-                else: 
-                    unmatched.append(inspection)
+                if inspection["latitude"] and inspection["longitude"]:
+                    candidates = get_possible_matches(inspection, yh)
+                    match = pick_match(inspection, candidates) #can take block field
+                    if match != None:
+                        c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
+                            (match['name'], inspection['license_'], 
+                                inspection['address'], inspection['zip'], 
+                                match['yelp_id']))
+                    else: 
+                        unmatched.append(inspection)
             write_inspection(inspection, c)
     return unmatched
 
