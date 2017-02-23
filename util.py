@@ -213,9 +213,9 @@ def pick_match(inspection, candidates):
                             best_match_num_jw = curr_num_jw
                             first = False
             else:
-                if curr_name_jw >= .90:
-                    if curr_st_jw >= .90:
-                        if curr_num_jw >= .90:
+                if curr_name_jw >= .825:
+                    if curr_st_jw >= .825:
+                        if curr_num_jw >= .825:
                             curr_sum = curr_name_jw + curr_st_jw + curr_num_jw
                             best_sum = best_match_name_jw + best_match_street_jw + best_match_num_jw
                             if curr_sum > best_sum:
