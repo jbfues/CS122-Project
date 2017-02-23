@@ -4,6 +4,7 @@ import json
 import requests
 import re
 import jellyfish
+import csv
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
 
@@ -18,7 +19,7 @@ def get_types(inspections):
     Takes a list of dicts representing inspections and returns a list 
     of facility_type values that are deemed in the focus of the project.
     '''
-    types = set()
+    t = set()
     for inspection in inspections:
         t.add(inspection['facility_type'])
     types = set()
@@ -163,6 +164,7 @@ def get_possible_matches(inspection, yh, radius = 30, limit = 5):
     latitude = inspection['latitude']
     longitude = inspection['longitude']
     name = inspection['dba_name']
+    print(latitude, longitude, name, radius, limit)
     matches = yh.search_by_location(latitude, longitude, name, radius, limit)
     return matches 
 
@@ -239,7 +241,7 @@ class YelpHelper:
             )
         self.client = Client(auth)
 
-    def search_by_location(latitude, longitude, name, radius = 30, limit = 5):
+    def search_by_location(self, latitude, longitude, name, radius = 30, limit = 5):
         '''
         Inputs: latitude (number)
                 longitude (number)
@@ -255,17 +257,17 @@ class YelpHelper:
             'radius_filter': radius
             }
         #resp is a SearchResponse object
-        resp = client.search_by_coordinates(latitude, longitude, **params)
+        resp = self.client.search_by_coordinates(latitude, longitude, **params)
         results = []
-        for b in resp.businesses: #iterate over business objects
-            address = business.location.address[0].encode('utf-8')
+        for business in resp.businesses: #iterate over business objects
+            address = str(business.location.address[0].encode('utf-8'))
             address = address_to_tuple(address)
             b = {
-                'name': b.name.encode('utf-8'), 
+                'name': business.name.encode('utf-8'), 
                 'street number': address[0], 
                 'street name': address[1], 
                 'zip': business.location.postal_code.encode('utf-8'),
-                'yelp_id': b.id.encode('utf-8')
+                'yelp_id': business.id.encode('utf-8')
                 }
             results.append(b)
         return results

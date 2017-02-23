@@ -3,6 +3,7 @@ from util import YelpHelper
 from util import get_inspections_from_csv
 from util import get_possible_matches
 from util import pick_match
+from util import get_types
 
 def write_inspection(i, c):
     '''
@@ -31,11 +32,11 @@ def write_inspections_to_db(inspections_csv, c):
     inspections = get_inspections_from_csv(inspections_csv)
     types = get_types(inspections)
     unmatched = []
-    for inspection in inspection:
+    for inspection in inspections:
         if inspection['facility_type'] in types:
             inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
                  inspection)
-            if not inDB and inspection['license_'] != '':
+            if not inDB.fetchall() and inspection['license_'] != '':
                 candidates = get_possible_matches(inspection, yh)
                 match = pick_match(inspection, candidates) #can take block field
                 if match != None:
@@ -43,8 +44,9 @@ def write_inspections_to_db(inspections_csv, c):
                         (match['name'], inspection['license_'], 
                             inspection['address'], inspection['zip'], 
                             match['yelp_id']))
-                else unmatched.append(inspection)
-            write_inspection(inspection)
+                else: 
+                    unmatched.append(inspection)
+            write_inspection(inspection, c)
     return unmatched
 
 def create_tables(schema, c):
@@ -62,6 +64,7 @@ def create_tables(schema, c):
             }
         c (Cursor): a sqlite3 Cursor object for interacting with database
 
+c.execute(query, parameters)
     Returns: None
     '''
 
@@ -69,23 +72,20 @@ def create_tables(schema, c):
     # use c.execute(<command>) to create tables in database
     #######################################################
     for table in schema:
-        parameters = [table]
 
         # First part of the final query.
-        query = "CREATE TABLE ? ("
+        query = "CREATE TABLE " + str(table) + " ("
 
         # Create the second part of the query by joining strings.
         query_list = []
         for field in schema[table]:
-            field_string = "? ?"
+            field_string = str(field[0]) + " " + str(field[1])
             query_list.append(field_string)
-            parameters.append(field[0])
-            parameters.append(field[1])
         query_bis = ", ".join(query_list)
         
         # Put it all together.
         query = query + query_bis + ")"
-        c.execute(query, parameters)
+        c.execute(query)
 
     #######################################################
 
