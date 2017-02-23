@@ -242,21 +242,17 @@ class YelpHelper:
 
     def search_by_location(self, latitude, longitude, name, radius = 30, limit = 5):
         '''
-        Inputs: latitude (number)
-                longitude (number)
-                name (string)
+        Inputs: latitude (str)
+                longitude (str)
+                name (str)
                 radius (number)
                 limit (number)
 
         candidates: list of dicts representing businesses
         '''
-        params = {
-            'term': name,
-            'limit': limit,
-            'radius_filter': radius
-            }
         #resp is a SearchResponse object
-        resp = self.client.search_by_coordinates(latitude, longitude, **params)
+        resp = self.client.search_by_coordinates(latitude, longitude, term = name,
+                    limit = limit, radius_filter = radius_filter)
         results = []
         for business in resp.businesses: #iterate over business objects
             address = business.location.address[0].encode('utf-8')
@@ -278,7 +274,7 @@ class YelpHelper:
 
         Output: Business object
         '''
-        resp = client.get_business(ID)
+        resp = self.client.get_business(ID)
         return resp.business
 
 
