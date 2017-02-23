@@ -257,7 +257,6 @@ class YelpHelper:
         for business in resp.businesses: #iterate over business objects
             address = business.location.address[0].encode('utf-8')
             address = address_to_tuple(str(address).strip("b").strip("'"))
-            print(address)
             b = {
                 'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
                 'street number': address[0], 
