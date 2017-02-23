@@ -64,7 +64,6 @@ def create_tables(schema, c):
             }
         c (Cursor): a sqlite3 Cursor object for interacting with database
 
-c.execute(query, parameters)
     Returns: None
     '''
 
