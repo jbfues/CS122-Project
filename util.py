@@ -204,9 +204,9 @@ def pick_match(inspection, candidates):
             curr_st_jw = jellyfish.jaro_winkler(cand_st, inspec_street_name)
             curr_num_jw = jellyfish.jaro_winkler(cand_st_num, inspec_street_num) 
             if first:
-                if curr_name_jw >= .90:
-                    if curr_st_jw >= .90:
-                        if curr_num_jw >= .90:
+                if curr_name_jw >= .825:
+                    if curr_st_jw >= .825:
+                        if curr_num_jw >= .825:
                             best_match = candidate
                             best_match_name_jw = curr_name_jw
                             best_match_street_jw = curr_st_jw
