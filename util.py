@@ -156,7 +156,7 @@ def address_to_tuple(address):
     street = m.group(2).strip().lower()
     return (num, street)
 
-def get_possible_matches(inspection, yh, radius = 30, limit = 5):
+def get_possible_matches(inspection, yh, radius = 150, limit = 5):
     '''
     Takes a dict representing an inspection and a YelpHelper and
     returns a list of dicts representing possible yelp matches 
@@ -204,18 +204,18 @@ def pick_match(inspection, candidates):
             curr_st_jw = jellyfish.jaro_winkler(cand_st, inspec_street_name)
             curr_num_jw = jellyfish.jaro_winkler(cand_st_num, inspec_street_num) 
             if first:
-                if curr_name_jw >= .825:
-                    if curr_st_jw >= .825:
-                        if curr_num_jw >= .825:
+                if curr_name_jw >= .775:
+                    if curr_st_jw >= .775:
+                        if curr_num_jw >= .775:
                             best_match = candidate
                             best_match_name_jw = curr_name_jw
                             best_match_street_jw = curr_st_jw
                             best_match_num_jw = curr_num_jw
                             first = False
             else:
-                if curr_name_jw >= .825:
-                    if curr_st_jw >= .825:
-                        if curr_num_jw >= .825:
+                if curr_name_jw >= .775:
+                    if curr_st_jw >= .775:
+                        if curr_num_jw >= .775:
                             curr_sum = curr_name_jw + curr_st_jw + curr_num_jw
                             best_sum = best_match_name_jw + best_match_street_jw + best_match_num_jw
                             if curr_sum > best_sum:

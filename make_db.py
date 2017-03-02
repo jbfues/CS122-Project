@@ -32,6 +32,8 @@ def write_inspections_to_db(inspections_csv, c):
     inspections = get_inspections_from_csv(inspections_csv)
     types = get_types(inspections)
     unmatched = []
+    no_cand = 0
+    too_many = 0
     for inspection in inspections:
         if inspection['facility_type'] in types:
             inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
