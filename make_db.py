@@ -4,6 +4,7 @@ from util import get_inspections_from_csv
 from util import get_possible_matches
 from util import pick_match
 from util import get_types
+from util import break_string
 
 def write_inspection(i, c):
     '''
@@ -16,6 +17,15 @@ def write_inspection(i, c):
                         (i['license_'], i['inspection_id'], i['risk'], 
                             i['inspection_date'], i['inspection_type'], 
                             i['results'], i['violations']))
+
+def make_index(c):
+    c.execute('SELECT license, name, address FROM restaurants')
+    list_rest = c.fetchall()
+    for license, name, address in list_rest:
+        to_index = name + ' ' + address
+        index_list = break_string(to_index, repetition='no')
+        for index_word in index_list:
+            c.execute('INSERT INTO rest_index VALUES (?, ?)', (license, index_word))
 
 def write_inspections_to_db(inspections_csv, c):
     '''
@@ -50,6 +60,7 @@ def write_inspections_to_db(inspections_csv, c):
                     else: 
                         unmatched.append(inspection)
             write_inspection(inspection, c)
+    make_index(c)
     return unmatched
 
 def create_tables(schema, c):
@@ -114,7 +125,9 @@ def make_db_from(inspections_csv, db_file):
                             ('inspection_date', 'text'),
                             ('inspection_type', 'text'),
                             ('results', 'text'),
-                            ('violations', 'text')]
+                            ('violations', 'text')],
+            'rest_index':  [('license', 'text'),
+                            ('word', 'text')]
             }
     create_tables(schema, c)
     write_inspections_to_db(inspections_csv, c)

@@ -92,7 +92,7 @@ def get_api_key(filename = 'yelp_api_key.json'):
     json_str = json_file.read()
     return json.loads(json_str)
 
-def break_string(input_str):
+def break_string(input_str, repetition='yes'):
     '''
     Takes a string and returns a list of words in the string.
     Inputs:
@@ -108,8 +108,12 @@ def break_string(input_str):
             item = item.replace(punc, '')
     final_list = []
     for x in string_list:
-        if x != "":
-            final_list.append(x)
+        if repetition == 'yes' or x not in final_list:
+            if x != "":
+                if repetition == 'no':
+                    final_list.append(x.strip('"'))
+                else:
+                    final_list.append(x)
     return final_list
 
 def get_name_words(inspection, match = {}):
