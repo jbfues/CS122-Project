@@ -19,10 +19,10 @@ def write_inspection(i, c):
                             i['results'], i['violations']))
 
 def make_index(c):
-    c.execute('SELECT license, name, address FROM restaurants')
+    c.execute('SELECT license, name, address, zipcode FROM restaurants')
     list_rest = c.fetchall()
-    for license, name, address in list_rest:
-        to_index = name + ' ' + address
+    for license, name, address, zipcode in list_rest:
+        to_index = name + ' ' + address + ' ' + zipcode
         index_list = break_string(to_index, repetition='no')
         for index_word in index_list:
             c.execute('INSERT INTO rest_index VALUES (?, ?)', (license, index_word))
