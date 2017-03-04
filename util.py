@@ -7,6 +7,7 @@ import jellyfish
 import csv
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
+from math import radians, cos, sin, asin, sqrt
 
 CITY_API_ENDPOINT = 'https://data.cityofchicago.org/resource/cwig-ma7x.json'
 KEYWORDS = ['nursing', 'day care', 'school', 'bakery', 'deli', 
@@ -228,6 +229,34 @@ def pick_match(inspection, candidates):
                                 best_match_street_jw = curr_st_jw
                                 best_match_num_jw = curr_num_jw
     return best_match
+
+
+def haversine(lon1, lat1, lon2, lat2):
+    '''
+    Calculate the circle distance between two points 
+    on the earth (specified in decimal degrees)
+
+    Taken from Programming Assignment 3, courses.py, from 
+    CS122 at the University of Chicago, Winter 2017.
+    '''
+    # ensure that the values are decimal degrees, not strings. 
+    lon1 = float(lon1)
+    lon2 = float(lon2)
+    lat1 = float(lat1)
+    lat2 = float(lat2)
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+
+    # 6367 km is the radius of the Earth
+    km = 6367 * c
+    m = km * 1000
+    return m
 
 
 class YelpHelper:
