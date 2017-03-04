@@ -56,7 +56,14 @@ def find_nearby_restaurants(license_number, db_filename):
     init_lon = init_out.fetchone()['longitude']
     if init_lat == None or init_lon == None:
         return nearby_restaurants
+    # if we can, now we search restaurants
     query = "SELECT yelp_id FROM restaurants JOIN inspections AS a JOIN inspections AS b\
      ON restaurants.license = a.license AND restaurants.license = b.license\
-      WHERE distance_between(a.longitude, a.latitude, b.longitude, b.latitude) <= 1600 AND a.license = ?"
-
+      WHERE distance_between(a.longitude, a.latitude, b.longitude, b.latitude) <= 1600 AND a.license = ?\
+       LIMIT 5"
+    # collect the nearby restaurant data
+    output = c.execute(query, license_number)
+    for x in output.fetchall():
+        nearby_restaurants.append(x['yelp_id'])
+    # return it
+    return nearby_restaurants
