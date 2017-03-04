@@ -11,12 +11,13 @@ def write_inspection(i, c):
     Writes inspection data into inspections table 
 
     Columns are (inspection_id, risk, inspection_date,
-                     inspection_type, results, violations)
+                     inspection_type, results, violations, latitude,
+                      longitude)
     '''
-    c.execute("INSERT INTO inspections VALUES (?, ?, ?, ?, ?, ?, ?)", 
+    c.execute("INSERT INTO inspections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
                         (i['license_'], i['inspection_id'], i['risk'], 
                             i['inspection_date'], i['inspection_type'], 
-                            i['results'], i['violations']))
+                            i['results'], i['violations'], i['latitude'], i['longitude']))
 
 def make_index(c):
     c.execute('SELECT license, name, address, zipcode FROM restaurants')
@@ -134,7 +135,9 @@ def make_db_from(inspections_csv, db_file):
                             ('inspection_date', 'text'),
                             ('inspection_type', 'text'),
                             ('results', 'text'),
-                            ('violations', 'text')],
+                            ('violations', 'text'),
+                            ('latitude', 'text'),
+                            ('longitude', 'text')],
             'rest_index':  [('license', 'text'),
                             ('word', 'text')]
             }
