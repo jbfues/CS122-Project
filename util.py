@@ -290,14 +290,14 @@ class YelpHelper:
         results = []
         for business in resp.businesses: #iterate over business objects
             try:
-                address = business.location.address[0].encode('utf-8')
+                address = business.location.address[0]
                 address = address_to_tuple(str(address).strip("b").strip("'"))
                 b = {
-                    'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
+                    'name': str(business.name).strip("b").strip("'"), 
                     'street number': address[0], 
                     'street name': address[1], 
-                    'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
-                    'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
+                    'zip': str(business.location.postal_code).strip("b").strip("'"),
+                    'yelp_id': str(business.id).strip("b").strip("'")
                     }
                 results.append(b)
             except:
