@@ -17,14 +17,11 @@ def search_by_words(input_str, c):
     final_query = query + where_query + end_query
     c.execute(final_query, arguments)
     all_licenses = c.fetchall()
-    print(all_licenses)
     list_rest = []
     for license in all_licenses:
         lic = license[0]
-        print(lic)
         c.execute('SELECT * FROM restaurants WHERE license = ?', [lic])
         rest = c.fetchall()[0]
-        print(rest)
         rest_dict = {}
         rest_dict['name'] = rest[0]
         rest_dict['license'] = rest[1]
