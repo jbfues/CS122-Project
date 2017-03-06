@@ -288,16 +288,17 @@ class YelpHelper:
                     limit = limit, radius_filter = radius)
         results = []
         for business in resp.businesses: #iterate over business objects
-            address = business.location.address[0].encode('utf-8')
-            address = address_to_tuple(str(address).strip("b").strip("'"))
-            b = {
-                'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
-                'street number': address[0], 
-                'street name': address[1], 
-                'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
-                'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
-                }
-            results.append(b)
+            if len(business.location.address) > 0:
+                address = business.location.address[0].encode('utf-8')
+                address = address_to_tuple(str(address).strip("b").strip("'"))
+                b = {
+                    'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
+                    'street number': address[0], 
+                    'street name': address[1], 
+                    'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
+                    'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
+                    }
+                results.append(b)
         return results
 
     def search_by_id(ID):
