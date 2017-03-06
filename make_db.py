@@ -46,27 +46,30 @@ def write_inspections_to_db(inspections_csv, c):
     unmatched = []
     loop_counter = 0
     for inspection in inspections:
-        if inspection['facility_type'] in types and inspection['license_'
-                ] != '' and inspection['license_'] != 0:
-            inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
-                 inspection)
-            if not inDB.fetchall():
-                if inspection["latitude"] and inspection["longitude"]:
-                    candidates = get_possible_matches(inspection, yh)
-                    match = pick_match(inspection, candidates) #can take block field
-                    if match != None:
-                        c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
-                            (inspection['dba_name'], inspection['license_'], 
-                                inspection['address'], inspection['zip'], 
-                                match['yelp_id']))
-                    else: 
+        try:
+            if inspection['facility_type'] in types and inspection['license_'
+                    ] != '' and inspection['license_'] != 0:
+                inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
+                     inspection)
+                if not inDB.fetchall():
+                    if inspection["latitude"] and inspection["longitude"]:
+                        candidates = get_possible_matches(inspection, yh)
+                        match = pick_match(inspection, candidates) #can take block field
+                        if match != None:
+                            c.execute("INSERT INTO restaurants VALUES (?, ?, ?, ?, ?)", 
+                                (inspection['dba_name'], inspection['license_'], 
+                                    inspection['address'], inspection['zip'], 
+                                    match['yelp_id']))
+                        else: 
+                            unmatched.append(inspection)
+                    else:
                         unmatched.append(inspection)
-                else:
-                    unmatched.append(inspection)
-            write_inspection(inspection, c)
-            loop_counter += 1
-            if loop_counter % 1000 == 0:
-                c.connection.commit()
+                write_inspection(inspection, c)
+                loop_counter += 1
+                if loop_counter % 500 == 0:
+                    c.connection.commit()
+        except:
+            pass
     for inspection in unmatched:
         inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
             inspection)
