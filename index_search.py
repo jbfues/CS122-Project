@@ -3,6 +3,7 @@ from util import break_string
 
 def search_by_words(input_str, c):
     index_list = break_string(input_str, repetition='no')
+    index_list = [word.lower() for word in index_list]
     if not index_list:
         return []
     query = 'SELECT license, COUNT(license) AS num FROM rest_index WHERE '

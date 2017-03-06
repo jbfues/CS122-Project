@@ -25,6 +25,7 @@ def make_index(c):
     for license, name, address, zipcode in list_rest:
         to_index = name + ' ' + address + ' ' + zipcode
         index_list = break_string(to_index, repetition='no')
+        index_list = [word.lower() for word in index_list]
         for index_word in index_list:
             c.execute('INSERT INTO rest_index VALUES (?, ?)', (license, index_word))
 
