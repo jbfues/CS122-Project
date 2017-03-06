@@ -9,6 +9,19 @@ from util import get_inspections_from_api
 from make_db import write_inspection
 from make_db import make_index
 
+def timestamp_to_date(timestamp):
+    year = timestamp[:4]
+    if timestamp[5] == '0':
+        month = timestamp[6]
+    else:
+        month = timestamp[5:7]
+    if timestamp[8] == '0':
+        day = timestamp[9]
+    else:
+        day = timestamp[8:10]
+    date = month + '/' + day + '/' + year
+    return date
+
 def update_inspections_to_db(inspections, c):
     '''
     Goes through all inspections, matches them to a unique yelp id 
@@ -24,6 +37,10 @@ def update_inspections_to_db(inspections, c):
     types = get_types(inspections)
     unmatched = []
     for inspection in inspections:
+        inspection['location'] = str((inspection['location']['coordinates'][1
+            ], inspection['location']['coordinates'][0]))
+        inspection['inspection_date'] = timestamp_to_date(inspection[
+            'inspection_date'])
         if inspection['facility_type'] in types and inspection['license_'
                 ] != '' and inspection['license_'] != 0:
             inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
@@ -73,7 +90,7 @@ def update(db_file):
         day_number = '0' + str(date_tuple[2])
     else:
         day_number = str(date_tuple[2])
-    min_date = year + '-' + month + '-' + day_number + 'T00:00:00'
+    min_date = '"' + year + '-' + month + '-' + day_number + 'T00:00:00"'
     inspections = get_inspections_from_api(min_date)
     update_inspections_to_db(inspections, c)
     conn.commit()
