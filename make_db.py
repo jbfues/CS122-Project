@@ -44,6 +44,7 @@ def write_inspections_to_db(inspections_csv, c):
     inspections = get_inspections_from_csv(inspections_csv)
     types = get_types(inspections)
     unmatched = []
+    loop_counter = 0
     for inspection in inspections:
         if inspection['facility_type'] in types and inspection['license_'
                 ] != '' and inspection['license_'] != 0:
@@ -63,7 +64,9 @@ def write_inspections_to_db(inspections_csv, c):
                 else:
                     unmatched.append(inspection)
             write_inspection(inspection, c)
-            c.connection.commit()
+            loop_counter += 1
+            if loop_counter % 1000 == 0:
+                c.connection.commit()
     for inspection in unmatched:
         inDB = c.execute("SELECT * FROM restaurants WHERE license=:license_",
             inspection)
