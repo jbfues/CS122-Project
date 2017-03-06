@@ -63,6 +63,7 @@ def write_inspections_to_db(inspections_csv, c):
                 else:
                     unmatched.append(inspection)
             write_inspection(inspection, c)
+            loop_counter += 1
             if loop_counter % 1000 == 0:
                 c.connection.commit()
     for inspection in unmatched:
