@@ -200,34 +200,35 @@ def pick_match(inspection, candidates):
     best_match_num_jw = 0
     first = True
     #Iterate over candidates to find the best match:
-    for candidate in candidates:
-        if candidate['zip'] == inspec_zip:
-            cand_name = candidate['name'].lower()
-            cand_st = candidate['street name'].lower()
-            cand_st_num = candidate['street number']
-            curr_name_jw = jellyfish.jaro_winkler(cand_name, inspec_name)
-            curr_st_jw = jellyfish.jaro_winkler(cand_st, inspec_street_name)
-            curr_num_jw = jellyfish.jaro_winkler(cand_st_num, inspec_street_num) 
-            if first:
-                if curr_name_jw >= .775:
-                    if curr_st_jw >= .775:
-                        if curr_num_jw >= .775:
-                            best_match = candidate
-                            best_match_name_jw = curr_name_jw
-                            best_match_street_jw = curr_st_jw
-                            best_match_num_jw = curr_num_jw
-                            first = False
-            else:
-                if curr_name_jw >= .775:
-                    if curr_st_jw >= .775:
-                        if curr_num_jw >= .775:
-                            curr_sum = curr_name_jw + curr_st_jw + curr_num_jw
-                            best_sum = best_match_name_jw + best_match_street_jw + best_match_num_jw
-                            if curr_sum > best_sum:
+    if candidates:
+        for candidate in candidates:
+            if candidate['zip'] == inspec_zip:
+                cand_name = candidate['name'].lower()
+                cand_st = candidate['street name'].lower()
+                cand_st_num = candidate['street number']
+                curr_name_jw = jellyfish.jaro_winkler(cand_name, inspec_name)
+                curr_st_jw = jellyfish.jaro_winkler(cand_st, inspec_street_name)
+                curr_num_jw = jellyfish.jaro_winkler(cand_st_num, inspec_street_num) 
+                if first:
+                    if curr_name_jw >= .775:
+                        if curr_st_jw >= .775:
+                            if curr_num_jw >= .775:
                                 best_match = candidate
                                 best_match_name_jw = curr_name_jw
                                 best_match_street_jw = curr_st_jw
                                 best_match_num_jw = curr_num_jw
+                                first = False
+                else:
+                    if curr_name_jw >= .775:
+                        if curr_st_jw >= .775:
+                            if curr_num_jw >= .775:
+                                curr_sum = curr_name_jw + curr_st_jw + curr_num_jw
+                                best_sum = best_match_name_jw + best_match_street_jw + best_match_num_jw
+                                if curr_sum > best_sum:
+                                    best_match = candidate
+                                    best_match_name_jw = curr_name_jw
+                                    best_match_street_jw = curr_st_jw
+                                    best_match_num_jw = curr_num_jw
     return best_match
 
 
@@ -288,16 +289,19 @@ class YelpHelper:
                     limit = limit, radius_filter = radius)
         results = []
         for business in resp.businesses: #iterate over business objects
-            address = business.location.address[0].encode('utf-8')
-            address = address_to_tuple(str(address).strip("b").strip("'"))
-            b = {
-                'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
-                'street number': address[0], 
-                'street name': address[1], 
-                'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
-                'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
-                }
-            results.append(b)
+            try:
+                address = business.location.address[0].encode('utf-8')
+                address = address_to_tuple(str(address).strip("b").strip("'"))
+                b = {
+                    'name': str(business.name.encode('utf-8')).strip("b").strip("'"), 
+                    'street number': address[0], 
+                    'street name': address[1], 
+                    'zip': str(business.location.postal_code.encode('utf-8')).strip("b").strip("'"),
+                    'yelp_id': str(business.id.encode('utf-8')).strip("b").strip("'")
+                    }
+                results.append(b)
+            except:
+                pass
         return results
 
     def search_by_id(ID):

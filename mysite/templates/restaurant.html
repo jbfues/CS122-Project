@@ -1,0 +1,35 @@
+<header><h3>Restaurant</h3></header>
+{% if name %}
+<li>Name:{{ name }}</li><br>
+{% endif %}
+{% if address %}
+<li>Address: {{ address }}</li><br>
+{% endif %}
+{% if rating %}
+<img src="{{ rating }}" alt="Rating" style="width:84px;height:17px;"><br>
+{% endif %}
+{% if link %}
+<a href="{{ link }}"><b>Yelp Page</b></a><br>
+{% endif %}
+<header><h3>Most Recent Inspection</h3></header>
+{% if date %}
+<li>Inspection Date: {{ date }}</li><br>
+{% endif %}
+{% if type %}
+<li>Inspection Type: {{ type }}</li><br>
+{% endif %}
+{% if results %}
+<li>Inspection Results: {{ results }}</li><br>
+{% endif %}
+{% if violations %}
+<li>Violations: {{ violations }}</li><br>
+{% endif %}
+<header>
+    <h3>Subscribe</h3>
+    <p>To receive email notifications when this facility is inspected></p>
+</header>
+<form action="{% url 'restaurant' license %}" method="post">
+<input type="text" name="email" size="30"> <input type="submit" value="Subscription">
+</form><hr><br>
+<header><h3>Don't like what you see?</h3></header>
+<a href="{% url 'more' license %}"><b>Click here for more restaurants.</b></a>
