@@ -60,10 +60,99 @@ def find_nearby_restaurants(license_number, db_filename):
     query = "SELECT yelp_id FROM restaurants JOIN inspections AS a JOIN inspections AS b\
      ON restaurants.license = a.license AND restaurants.license = b.license\
       WHERE distance_between(a.longitude, a.latitude, b.longitude, b.latitude) <= 1600 AND a.license = ?\
-       LIMIT 5"
+       AND b.latitude IS NOT NULL AND b.longitude IS NOT NULL LIMIT 10"
     # collect the nearby restaurant data
     output = c.execute(query, license_number)
     for x in output.fetchall():
-        nearby_restaurants.append(x['yelp_id'])
+        if x['yelp_id'] != None:
+            nearby_restaurants.append(x['yelp_id'])
     # return it
     return nearby_restaurants
+
+def get_nearby_menus(license_number, db_filename):
+    '''
+    Takes the license number of a restaurant 
+    and the name of the file with out database and returns 
+    a dictionary of the nearby restaurants, indexed by yelp_id, 
+    and their menus.
+    '''
+    # initialize the dictionary
+    nearby_menus = {}
+    # find the nearby restaurants
+    nearby_restaurants = find_nearby_restaurants(license_number, db_filename)
+    # find their menus
+    for restaurant in nearby_restaurants:
+        menu_items = get_menu_items(restaurant)
+        nearby_menus[restaurant] = menu_items
+    # return the completed dictionary
+    return nearby_menus
+
+def find_similar_restaurants(license_number, db_filename):
+    '''
+    Takes the license number and the filename of our database 
+    and returns a list of restaurants that cover more than 60 percent of
+    the available menu of the given restaurant.
+
+    If we cannot find the menu of the restaurant, it simply returns a list of 
+    nearby alternatives.
+
+    Either way, the list will be a list of yelp_ids
+    '''
+
+    # connect to the database
+    conn = sqlite3.connect(db_filename)
+    c = conn.cursor()
+    # find the yelp_id of the given restaurant
+    init_query = "SELECT yelp_id from restaurants WHERE license = ? LIMIT 1"
+    init_output = c.execute(init_query, license_number)
+    init_id = init_output.fetchone()['yelp_id']
+
+
+    # return just nearby restaurants if we cannot find the menu
+    if init_id == None:
+        print("No menu found")
+        return find_nearby_restaurants(license_number, db_filename)
+
+    # get the menu from our restaurant
+    init_menu = get_menu_items(init_id)
+    # return just nearby restaurants if we get no menu results 
+    if len(init_menu) == 0:
+        print('No menu found')
+        return find_nearby_restaurants(license_number, db_filename)
+
+    # adjust the menu list
+    menu_set = set()
+    for item in init_menu:
+        item_list = break_string(item)
+        item_tup = tuple(item_list)
+        menu_set.add(item_tup)
+    # initialize the return list
+    similar_restaurants = []
+    # get the nearby menus
+    nearby_menus = get_nearby_menus(license_number, db_filename)
+    # find restaurants with similar menus
+    for restaurant in nearby_menus:
+        matches = 0
+        menu_length = len(menu_set)
+        menu = nearby_menus[restaurant]
+        # select an item on the menu from the restaurant to match
+        for menu_item in menu_set:
+            my_len = len(menu_item)
+            item_matches = 0
+            # and check for it in the new menu
+            for item in menu:
+                item_words = break_string(item)
+                for word in menu_item:
+                    for x in item_words:
+                        if jellyfish.jaro_winkler(x, word) >= .8:
+                            item_matches += 1
+            # if the item is on the new menu, add a match
+            if item_matches/my_len >= .8:
+                matches += 1
+        # if 60 percent of the menu matches, add it to similar restaurants
+        if matches/menu_length >= .6:
+            similar_restaurants.append(restaurant)
+    # return the list of similar restaurants
+    return similar_restaurants
+
+
