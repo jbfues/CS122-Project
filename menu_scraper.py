@@ -52,8 +52,8 @@ def find_nearby_restaurants(license_number, db_filename):
     # check if we have the location information
     init_query = "SELECT latitude, longitude FROM inspections where license = ? LIMIT 1"
     init_out = c.execute(init_query, license_number)
-    init_lat = init_out.fetchone()['latitude']
-    init_lon = init_out.fetchone()['longitude']
+    init_lat = init_out.fetchone()[0]
+    init_lon = init_out.fetchone()[1]
     if init_lat == None or init_lon == None:
         return nearby_restaurants
     # if we can, now we search restaurants
@@ -64,7 +64,7 @@ def find_nearby_restaurants(license_number, db_filename):
     # collect the nearby restaurant data
     output = c.execute(query, license_number)
     for x in output.fetchall():
-        if x['yelp_id'] != None:
+        if x[0] != None:
             nearby_restaurants.append(x['yelp_id'])
     # return it
     return nearby_restaurants
@@ -105,7 +105,7 @@ def find_similar_restaurants(license_number, db_filename):
     # find the yelp_id of the given restaurant
     init_query = "SELECT yelp_id from restaurants WHERE license = ? LIMIT 1"
     init_output = c.execute(init_query, license_number)
-    init_id = init_output.fetchone()['yelp_id']
+    init_id = init_output.fetchone()[0]
 
 
     # return just nearby restaurants if we cannot find the menu
