@@ -6,7 +6,7 @@ def restaurant(request, license):
         email = request.POST['email']
         add_to_list(license, email)
     context = get_info(license)
-    render(request, 'restaurant.html', context)
+    return render(request, 'restaurant.html', context)
 
 def more(request, license):
-    render(request, 'more.html', {'result': get_more(license)})
+    return render(request, 'more.html', {'result': get_more(license)})
