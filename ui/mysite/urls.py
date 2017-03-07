@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from searchengine import views as s
+from restaurant import views as r 
 
 urlpatterns = [
     url(r'^admin/?', include(admin.site.urls)),
-    url(r'^/$', searchengine.views.search, name='home')
-    url(r'^(?P<license>[0-9]+)/?$', restaurant.views.restaurant, name='restaurant')
-    url(r'^(?P<license>[0-9]+)/more/?$', restaurant.views.more, name='more')
+    url(r'^/?$', s.search, name='home'),
+    url(r'^(?P<license>[0-9]+)/?$', r.restaurant, name='restaurant'),
+    url(r'^(?P<license>[0-9]+)/more/?$', r.more, name='more')
 ]

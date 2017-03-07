@@ -1,10 +1,8 @@
 import sqlite3
 from sys import path
-path.append('~/CS122-Project/')
-from util import YelpHelper
+from .util import YelpHelper
 
-db_file = '~/CS122-Project/database.sqlite3'
-
+db_file = '/home/student/CS122-Project/db.sql'
 
 def get_info(license):
     '''
