@@ -70,7 +70,7 @@ def get_inspections_from_api(min_date = None):
     return resp.json()
 
 
-def get_api_key(filename = 'yelp_api_key.json'):
+def get_api_key(filename = '/home/student/CS122-Project/yelp_api_key.json'):
     '''
     Retrieves API v2.0 key stored in a json file in the local directory
     (API uses OAuth 1.0a, xAuth protocal to authenitcate requests)

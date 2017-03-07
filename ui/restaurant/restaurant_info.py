@@ -1,6 +1,7 @@
 import sqlite3
 from sys import path
 from .util import YelpHelper
+from .get_recent_inspection import find_most_recent_inspection
 
 db_file = '/home/student/CS122-Project/db.sql'
 
@@ -22,10 +23,25 @@ def get_info(license):
     '''
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
-
-
-
+    inspection = find_most_recent_inspection(license, c)
+    query = "SELECT name, address, yelp_id FROM restaurants WHERE license = ?"
+    c.execute(query, license)
+    info = c.fetchone()
+    r = {}
+    r['name'] = info['name']
+    r['address'] = info['address']
+    r['date'] = inspection['inspection_date']
+    r['type'] = inspection['inspection_type']
+    r['results'] = inspection['results']
+    r['violations'] = inspection['violations']
+    r['license'] = license
+    if info['yelp_id'] != None:
+        yh = YelpHelper()
+        b = yh.search_by_id(info['yelp_id'])
+        r['rating'] = b.rating_image_url
+        r['link'] = b.url 
     conn.close()
+    return r 
 
 def get_more(license):
     ''' 
