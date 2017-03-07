@@ -41,8 +41,8 @@ def find_most_recent_inspection(license_number, c):
             best_inspection = inspection
             first = False
         else:
-            best_date_string = best_inspection['inspection_date']
-            curr_date_string = inspection['inspection_date']
+            best_date_string = best_inspection[3]
+            curr_date_string = inspection[3]
             best_list = best_date_string.split('/')
             curr_list = curr_date_string.split('/')
             best_list = list(map(int, best_list))
@@ -57,15 +57,15 @@ def find_most_recent_inspection(license_number, c):
                         best_inspection = inspection
     # build the return dict
     inspection_dict = {}
-    inspection_dict['license_'] = best_inspection['license']
-    inspection_dict['inspection_id'] = best_inspection['inspection_id']
-    inspection_dict['risk'] = best_inspection['risk']
-    inspection_dict['inspection_date'] = best_inspection['inspection_date']
-    inspection_dict['inspection_type'] = best_inspection['inspection_type']
-    inspection_dict['results'] = best_inspection['results']
-    inspection_dict['violations'] = best_inspection['violations']
-    inspection_dict['latitude'] = best_inspection['latitude']
-    inspection_dict['longitude'] = best_inspection['longitude']
+    inspection_dict['license_'] = best_inspection[0]
+    inspection_dict['inspection_id'] = best_inspection[1]
+    inspection_dict[2] = best_inspection['risk']
+    inspection_dict['inspection_date'] = best_inspection[3]
+    inspection_dict['inspection_type'] = best_inspection[4]
+    inspection_dict['results'] = best_inspection[5]
+    inspection_dict['violations'] = best_inspection[6]
+    inspection_dict['latitude'] = best_inspection[7]
+    inspection_dict['longitude'] = best_inspection[8]
 
     return inspection_dict
 
