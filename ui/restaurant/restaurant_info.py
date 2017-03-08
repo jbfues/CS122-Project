@@ -1,7 +1,7 @@
 import sqlite3
-from util import YelpHelper
-from get_recent_inspection import find_most_recent_inspection
-from menu_scraper import find_similar_restaurants
+from .util import YelpHelper
+from .get_recent_inspection import find_most_recent_inspection
+from .menu_scraper import find_similar_restaurants
 import smtplib
 
 db_file = '/home/student/CS122-Project/db.sql'
