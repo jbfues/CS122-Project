@@ -61,7 +61,7 @@ def find_nearby_restaurants(license_number, db_filename):
     # if we can, now we search restaurants
     query = "SELECT yelp_id FROM restaurants JOIN inspections AS a JOIN inspections AS b\
      ON restaurants.license = a.license AND restaurants.license = b.license\
-      WHERE distance_between(a.longitude, a.latitude, b.longitude, b.latitude) <= 1600 AND a.license = ?\
+      WHERE distance_between(a.longitude, a.latitude, b.longitude, b.latitude) <= 3200 AND a.license = ?\
        AND b.latitude IS NOT NULL AND b.longitude IS NOT NULL LIMIT 10"
     # collect the nearby restaurant data
     output = c.execute(query, (license_number,))
