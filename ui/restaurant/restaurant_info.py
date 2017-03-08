@@ -76,7 +76,7 @@ def add_to_list(license, email):
     '''
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
-
+    c.execute('INSERT INTO email_list VALUES (?,?)', (license, email))
     #save the changes to db file
     conn.commit()
     conn.close()
