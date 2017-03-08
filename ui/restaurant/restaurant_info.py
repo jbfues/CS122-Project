@@ -1,7 +1,7 @@
 import sqlite3
-from sys import path
 from .util import YelpHelper
 from .get_recent_inspection import find_most_recent_inspection
+from .menu_scraper import find_similar_restaurants
 
 db_file = '/home/student/CS122-Project/db.sql'
 
@@ -25,20 +25,20 @@ def get_info(license):
     c = conn.cursor()
     inspection = find_most_recent_inspection(license, c)
     query = "SELECT name, address, yelp_id FROM restaurants WHERE license = ?"
-    c.execute(query, license)
+    c.execute(query, (license,))
     info = c.fetchone()
     r = {}
-    r['name'] = info['name']
-    r['address'] = info['address']
+    r['name'] = info[0]
+    r['address'] = info[1]
     r['date'] = inspection['inspection_date']
     r['type'] = inspection['inspection_type']
     r['results'] = inspection['results']
     r['violations'] = inspection['violations']
     r['license'] = license
-    if info['yelp_id'] != None:
+    if info[2] != None:
         yh = YelpHelper()
-        b = yh.search_by_id(info['yelp_id'])
-        r['rating'] = b.rating_image_url
+        b = yh.search_by_id(info[2])
+        r['rating'] = b.rating_img_url
         r['link'] = b.url 
     conn.close()
     return r 
@@ -51,9 +51,19 @@ def get_more(license):
              <name>, <address>), ... ] representing restaurants
             with similar menus.
     ''' 
+    yelp_ids = find_similar_restaurants(license, db_file)
+    conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    query = 'SELECT name, license, address FROM restaurants WHERE ' + ' OR '.join(
+        ('yelp_id = ?' for ID in yelp_ids))
+    c.execute(query, yelp_ids)
+    restaurants = c.fetchall()
+    rest_tuples = []
+    for r in restaurants:
+        rest_tuples.append((r[0], r[1], r[2]))
+    conn.close()
+    return rest_tuples
 
-
-    
 
 def add_to_list(license, email):
     '''
@@ -65,7 +75,6 @@ def add_to_list(license, email):
     '''
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
-
 
     #save the changes to db file
     conn.commit()

@@ -304,7 +304,7 @@ class YelpHelper:
                 pass
         return results
 
-    def search_by_id(ID):
+    def search_by_id(self, ID):
         '''
         Input: unique yelp id 
 

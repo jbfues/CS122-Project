@@ -1,4 +1,4 @@
 {% for res in result %}
-<a href="{{ res.1 }}"><b>{{ res.0 }}</b></a><br>
+<a href="{% url 'restaurant' res.1 %}"><b>{{ res.0 }}</b></a><br>
 {{ res.2 }}<br><br>
 {% endfor %}

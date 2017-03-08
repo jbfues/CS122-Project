@@ -1,10 +1,8 @@
-<header><h3>Restaurant</h3></header>
-{% if name %}
-<li>Name:{{ name }}</li><br>
-{% endif %}
+<header><h1>{{ name }}</h1>
 {% if address %}
-<li>Address: {{ address }}</li><br>
+<h2>Address: {{ address }}</h2>
 {% endif %}
+</header>
 {% if rating %}
 <img src="{{ rating }}" alt="Rating" style="width:84px;height:17px;"><br>
 {% endif %}
@@ -26,10 +24,10 @@
 {% endif %}
 <header>
     <h3>Subscribe</h3>
-    <p>To receive email notifications when this facility is inspected></p>
+    <p>To receive email notifications when this facility is inspected</p>
 </header>
-<form action="{% url 'restaurant' license %}" method="post">
-<input type="text" name="email" size="30"> <input type="submit" value="Subscription">
+<form action="{% url 'restaurant' license %}" method="post">{% csrf_token %}
+<input type="text" name="email" size="30"> <input type="submit" value="Subscribe">
 </form><hr><br>
 <header><h3>Don't like what you see?</h3></header>
-<a href="{% url 'more' license %}"><b>Click here for more restaurants.</b></a>
+<a href="{% url 'more' license %}"><b>Click here for alternative restaurants!</b></a>
