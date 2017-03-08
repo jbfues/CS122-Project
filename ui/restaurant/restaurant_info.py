@@ -34,6 +34,7 @@ def get_info(license):
     r['type'] = inspection['inspection_type']
     r['results'] = inspection['results']
     r['violations'] = inspection['violations']
+    r['risk'] = inspection['risk']
     r['license'] = license
     if info[2] != None:
         yh = YelpHelper()
