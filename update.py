@@ -15,6 +15,14 @@ DICT_FIELDS = set(['address', 'aka_name', 'city', 'dba_name', 'facility_type',
     'violations', 'zip'])
 
 def timestamp_to_date(timestamp):
+    '''
+    Convert a date in the form of a floating timestamp into a x/y/z form.
+
+    Input: 
+        timestamp (string): the timestamp to convert
+    
+    Returns: string
+    '''
     year = timestamp[:4]
     if timestamp[5] == '0':
         month = timestamp[6]
@@ -33,7 +41,7 @@ def update_inspections_to_db(inspections, c):
     and writes them to SQL database 
 
     Input: 
-        inspections_csv (str): filename for csv containing inspection data 
+        inspections (list): list of dictionaries representing inspections
         c (cursor): sqlite3 Cursor object for database
 
     Returns: list of dicts representing unmatched inspections 
@@ -78,6 +86,14 @@ def update_inspections_to_db(inspections, c):
     return unmatched
 
 def leap_year(year):
+    '''
+    Check whether a year number corresponds to leap year or not.
+
+    Input: 
+        year: int
+
+    Returns: Boolean
+    '''
     if year % 4 != 0:
         return False
     if year % 100 != 0:
@@ -87,6 +103,15 @@ def leap_year(year):
     return False
 
 def next_day(date_tuple):
+    '''
+    Finds the tuple representing the day coming after another one given as a 
+    tuple of the form (year, month, day).
+
+    Input: 
+        date_tuple: tuple
+
+    Returns: tuple
+    '''
     year = date_tuple[0]
     month = date_tuple[1]
     day = date_tuple[2] + 1
@@ -111,6 +136,13 @@ def next_day(date_tuple):
     return (year, month, day)
 
 def update(db_file):
+    '''
+    Find the most recent inspection in the database and add to the database 
+    every inspections from the following day and after (maximum 1000).
+
+    Input: 
+        db_file (str): name of the sql database
+    '''
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
     date_tuple = (0,0,0)
