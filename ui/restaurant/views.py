@@ -9,4 +9,8 @@ def restaurant(request, license):
     return render(request, 'restaurant.html', context)
 
 def more(request, license):
-    return render(request, 'more.html', {'result': get_more(license)})
+    result = get_more(license)
+    if result:
+        return render(request, 'more.html', {'result': result})
+    else:
+        return render(request, 'none.html')

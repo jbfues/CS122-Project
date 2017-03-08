@@ -54,13 +54,14 @@ def get_more(license):
     yelp_ids = find_similar_restaurants(license, db_file)
     conn = sqlite3.connect(db_file)
     c = conn.cursor()
-    query = 'SELECT name, license, address FROM restaurants WHERE ' + ' OR '.join(
-        ('yelp_id = ?' for ID in yelp_ids))
-    c.execute(query, yelp_ids)
-    restaurants = c.fetchall()
     rest_tuples = []
-    for r in restaurants:
-        rest_tuples.append((r[0], r[1], r[2]))
+    if yelp_ids:
+        query = 'SELECT name, license, address FROM restaurants WHERE ' + ' OR '.join(
+            ('yelp_id = ?' for ID in yelp_ids))
+        c.execute(query, yelp_ids)
+        restaurants = c.fetchall()
+        for r in restaurants:
+            rest_tuples.append((r[0], r[1], r[2]))
     conn.close()
     return rest_tuples
 
