@@ -1,11 +1,11 @@
 import sqlite3
-from .util import YelpHelper
-from .util import get_inspections_from_csv
-from .util import get_possible_matches
-from .util import pick_match
-from .util import get_types
-from .util import break_string
-from .util import haversine
+from util import YelpHelper
+from util import get_inspections_from_csv
+from util import get_possible_matches
+from util import pick_match
+from util import get_types
+from util import break_string
+from util import haversine
 import jellyfish
 import bs4
 import urllib3

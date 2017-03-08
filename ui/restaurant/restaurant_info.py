@@ -1,7 +1,8 @@
 import sqlite3
-from .util import YelpHelper
-from .get_recent_inspection import find_most_recent_inspection
-from .menu_scraper import find_similar_restaurants
+from util import YelpHelper
+from get_recent_inspection import find_most_recent_inspection
+from menu_scraper import find_similar_restaurants
+import smtplib
 
 db_file = '/home/student/CS122-Project/db.sql'
 
@@ -80,3 +81,22 @@ def add_to_list(license, email):
     #save the changes to db file
     conn.commit()
     conn.close()
+
+def send_welcome_email(email):
+    '''
+    Sends welcome email to given email address
+    Inputs:
+        email: a string
+
+    Email instructions courtesy of naelshiab.com
+    '''
+
+    my_serv = smtplib.SMTP('smtp.gmail.com', 587)
+    my_serv.starttls()
+    my_serv.login("safefoodchicago@gmail.com", "dontgettheruns")
+
+    message = "Thank you for signing up for Safe Food Chicago email updates!\
+     \n Best \n The Safe Food Chicago Team"
+
+    my_serv.sendmail('safefoodchicago@gmail.com', email, message)
+    my_serv.quit()
