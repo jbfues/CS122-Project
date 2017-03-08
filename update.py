@@ -8,6 +8,7 @@ from util import break_string
 from util import get_inspections_from_api
 from make_db import write_inspection
 from make_db import make_index
+import smtplib
 
 DICT_FIELDS = set(['address', 'aka_name', 'city', 'dba_name', 'facility_type',
     'inspection_date', 'inspection_id', 'inspection_type', 'latitude', 
@@ -173,3 +174,31 @@ def update(db_file):
     update_inspections_to_db(inspections, c)
     conn.commit()
     conn.close()
+
+def send_email_update(i, email):
+    '''
+    Sends an email with the details of an inspection to a subscriber.
+
+    Inputs:
+        i: an inspection dictionary
+        email: a string
+
+    Credit to naelshiab.com for the email code syntax
+    '''
+
+    my_server = smtplib.SMTP('smtp.gmail.com', 587)
+    my_server.starttls()
+    my_server.login('safefoodchicago@gmail.com', 'dontgettheruns')
+
+    msg_intro = "A restaurant you have subscribed to was inspected!"
+    msg_name = "\nRestaurant Name: " + i['dba_name']
+    msg_date = '\nInspection Date: ' + i['inspection_date']
+    msg_type = "\nInspection Type: " + i['inspection_type']
+    msg_rslt = "\nInspection Result: " + i['results']
+    msg_vltn = "\nViolations: " + i['violations']
+    msg_signoff = "\nBest\nThe Safe Food Chicago Team"
+    full_message = msg_intro + msg_name + msg_date + msg_type + msg_rslt + msg_vltn + msg_signoff
+
+    my_server.sendmail('safefoodchicago@gmail.com', email, full_message)
+    my_server.quit()
+
