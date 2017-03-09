@@ -146,13 +146,13 @@ def find_similar_restaurants(license_number, db_filename):
                 item_words = break_string(item)
                 for word in menu_item:
                     for x in item_words:
-                        if jellyfish.jaro_winkler(x, word) >= .7:
+                        if jellyfish.jaro_winkler(x, word) >= .55:
                             item_matches += 1
             # if the item is on the new menu, add a match
-            if item_matches/my_len >= .55:
+            if item_matches/my_len >= .45:
                 matches += 1
-        # if 60 percent of the menu matches, add it to similar restaurants
-        if matches/menu_length >= .5:
+        # if 45 percent of the menu matches, add it to similar restaurants
+        if matches/menu_length >= .45:
             similar_restaurants.append(restaurant)
     conn.close()
     # return the list of similar restaurants
