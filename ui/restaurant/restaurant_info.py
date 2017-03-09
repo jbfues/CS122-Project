@@ -97,7 +97,7 @@ def send_welcome_email(email):
     my_serv.login("safefoodchicago@gmail.com", "dontgettheruns")
 
     message = "Thank you for signing up for Safe Food Chicago email updates!\
-     \n Best \n The Safe Food Chicago Team"
+     \n\n Best \n The Safe Food Chicago Team"
 
     my_serv.sendmail('safefoodchicago@gmail.com', email, message)
     my_serv.quit()
