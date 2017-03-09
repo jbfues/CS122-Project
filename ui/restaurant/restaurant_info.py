@@ -35,6 +35,7 @@ def get_info(license):
     r['type'] = inspection['inspection_type']
     r['results'] = inspection['results']
     r['violations'] = inspection['violations']
+    r['risk'] = inspection['risk']
     r['license'] = license
     if info[2] != None:
         yh = YelpHelper()
@@ -96,7 +97,7 @@ def send_welcome_email(email):
     my_serv.login("safefoodchicago@gmail.com", "dontgettheruns")
 
     message = "Thank you for signing up for Safe Food Chicago email updates!\
-     \n Best \n The Safe Food Chicago Team"
+     \n\n Best \n The Safe Food Chicago Team"
 
     my_serv.sendmail('safefoodchicago@gmail.com', email, message)
     my_serv.quit()
